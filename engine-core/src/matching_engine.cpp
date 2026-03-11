@@ -17,8 +17,8 @@ MatchingEngine::MatchingEngine() {
 }
 
 MatchingEngine::~MatchingEngine() {
-    delete orders;
-    delete riders;
+    delete[] orders;
+    delete[] riders;
 }
 
 void MatchingEngine::addOrder(DeliveryOrder order) {
@@ -27,7 +27,7 @@ void MatchingEngine::addOrder(DeliveryOrder order) {
         int new_capacity = order_capacity * 2;
         DeliveryOrder* new_orders = new DeliveryOrder[new_capacity];
         memcpy(new_orders, orders, order_count * sizeof(DeliveryOrder));
-        delete orders;
+        delete[] orders;
         orders = new_orders;
         order_capacity = new_capacity;
     }
@@ -40,7 +40,7 @@ void MatchingEngine::addRider(Rider rider) {
         int new_capacity = rider_capacity * 2;
         Rider* new_riders = new Rider[new_capacity];
         memcpy(new_riders, riders, rider_count * sizeof(Rider));
-        delete riders;
+        delete[] riders;
         riders = new_riders;
         rider_capacity = new_capacity;
     }
@@ -110,7 +110,7 @@ vector<MatchResult> MatchingEngine::matchAll() {
                     break;
                 }
             }
-            free(match);
+            delete match;
         }
     }
     return results;
