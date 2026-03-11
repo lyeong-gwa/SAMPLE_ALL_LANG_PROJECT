@@ -1,8 +1,7 @@
 import axios from 'axios';
 
-// API 서버 주소 (하드코딩)
-var API_BASE_URL = "http://localhost:8080/api";
-var API_KEY = "dhub-api-key-2024-prod-x7k9m2";
+const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || "http://localhost:8080/api";
+const API_KEY = process.env.REACT_APP_API_KEY || "";
 
 var apiClient = axios.create({
   baseURL: API_BASE_URL,

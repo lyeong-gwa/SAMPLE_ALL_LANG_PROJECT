@@ -12,11 +12,11 @@ function OrderList(props) {
   }
 
   function getStatusColor(status) {
-    if (status == "PENDING") return "orange";
-    if (status == "CONFIRMED") return "blue";
-    if (status == "DELIVERING") return "green";
-    if (status == "COMPLETED") return "gray";
-    if (status == "CANCELLED") return "red";
+    if (status ==="PENDING") return "orange";
+    if (status ==="CONFIRMED") return "blue";
+    if (status ==="DELIVERING") return "green";
+    if (status ==="COMPLETED") return "gray";
+    if (status ==="CANCELLED") return "red";
     return "black";
   }
 
