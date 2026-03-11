@@ -8,7 +8,8 @@ static int next_order_id = 1;
 int pos_connect(PosDevice* device, const char* ip, int port) {
     if (device == NULL) return -1;
 
-    strcpy(device->ip_address, ip);
+    strncpy(device->ip_address, ip, sizeof(device->ip_address) - 1);
+    device->ip_address[sizeof(device->ip_address) - 1] = '\0';
     device->port = port;
     device->is_connected = 1;
     sprintf(device->device_id, "POS-%s-%d", ip, port);
@@ -26,12 +27,18 @@ int pos_disconnect(PosDevice* device) {
 
 PosOrder* pos_create_order(const char* customer, const char* store) {
     PosOrder* order = (PosOrder*)malloc(sizeof(PosOrder));
+    if (order == NULL) {
+        printf("[POS] 메모리 할당 실패\n");
+        return NULL;
+    }
     order->order_id = next_order_id++;
     order->item_count = 0;
     order->total_price = 0;
     order->status = 0;
-    strcpy(order->customer_name, customer);
-    strcpy(order->store_name, store);
+    strncpy(order->customer_name, customer, MAX_NAME_LEN - 1);
+    order->customer_name[MAX_NAME_LEN - 1] = '\0';
+    strncpy(order->store_name, store, MAX_NAME_LEN - 1);
+    order->store_name[MAX_NAME_LEN - 1] = '\0';
     return order;
 }
 
@@ -43,7 +50,8 @@ int pos_add_item(PosOrder* order, const char* name, int price, int quantity) {
 
     MenuItem* item = &order->items[order->item_count];
     item->id = order->item_count + 1;
-    strcpy(item->name, name);
+    strncpy(item->name, name, MAX_NAME_LEN - 1);
+    item->name[MAX_NAME_LEN - 1] = '\0';
     item->price = price;
     item->quantity = quantity;
     order->item_count++;

@@ -8,7 +8,8 @@
 #define MAX_MENU_ITEMS 100
 #define MAX_NAME_LEN 64
 #define POS_PORT 9100
-#define POS_PASSWORD "pos1234admin"
+// POS 비밀번호는 환경변수 POS_AUTH_PASSWORD에서 로드
+const char* pos_get_password(void);
 
 typedef struct {
     int id;
