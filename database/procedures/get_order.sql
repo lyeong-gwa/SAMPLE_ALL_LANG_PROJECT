@@ -56,14 +56,15 @@ END //
 DELIMITER ;
 
 
--- 주문 검색 (동적 SQL - 취약한 방식)
+-- 주문 검색 (파라미터 바인딩 사용)
 DELIMITER //
 
 CREATE PROCEDURE sp_search_orders(IN p_keyword VARCHAR(100))
 BEGIN
-    SET @sql = CONCAT('SELECT * FROM orders WHERE delivery_address LIKE ''%', p_keyword, '%''');
+    SET @search_keyword = CONCAT('%', p_keyword, '%');
+    SET @sql = 'SELECT * FROM orders WHERE delivery_address LIKE ?';
     PREPARE stmt FROM @sql;
-    EXECUTE stmt;
+    EXECUTE stmt USING @search_keyword;
     DEALLOCATE PREPARE stmt;
 END //
 
