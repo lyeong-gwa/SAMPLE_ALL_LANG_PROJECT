@@ -1,0 +1,38 @@
+# Environment
+.env
+*.env.local
+
+# Java
+target/
+*.class
+*.jar
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+
+# C#
+bin/
+obj/
+
+# Node
+node_modules/
+build/
+
+# C/C++
+*.o
+*.out
+*.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
