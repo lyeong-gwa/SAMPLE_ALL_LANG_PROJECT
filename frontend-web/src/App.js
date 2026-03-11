@@ -4,10 +4,7 @@ import OrderForm from './components/OrderForm';
 import { getOrders } from './services/api';
 
 function App() {
-  var orders = [];
-  var setOrders = null;
-
-  [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
     loadOrders();
