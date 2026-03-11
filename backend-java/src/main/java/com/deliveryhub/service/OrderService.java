@@ -3,11 +3,14 @@ package com.deliveryhub.service;
 import com.deliveryhub.model.Order;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class OrderService {
@@ -15,10 +18,16 @@ public class OrderService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    // DB 접속 정보 (개발환경용)
-    private String dbUrl = "jdbc:h2:mem:deliveryhub";
-    private String dbUser = "admin";
-    private String dbPassword = "admin1234";
+    @Value("${spring.datasource.url}")
+    private String dbUrl;
+
+    @Value("${spring.datasource.username}")
+    private String dbUser;
+
+    @Value("${spring.datasource.password}")
+    private String dbPassword;
+
+    private final ExecutorService executorService = Executors.newFixedThreadPool(4);
 
     @Transactional
     public Order createOrder(Order order) {
@@ -36,10 +45,10 @@ public class OrderService {
             if (order == null) {
                 throw new RuntimeException("주문을 찾을 수 없습니다: " + id);
             }
-        } catch (Exception e) {
-            System.out.println("에러 발생: " + e.getMessage());
         } catch (RuntimeException e) {
             System.out.println("런타임 에러: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("에러 발생: " + e.getMessage());
         }
         return order;
     }
@@ -57,12 +66,15 @@ public class OrderService {
     }
 
     public List<Order> searchOrders(String keyword) {
-        String query = "SELECT o FROM Order o WHERE o.customerName LIKE '%" + keyword + "%' OR o.storeName LIKE '%" + keyword + "%'";
-        return entityManager.createQuery(query, Order.class).getResultList();
+        return entityManager.createQuery(
+                "SELECT o FROM Order o WHERE o.customerName LIKE :keyword OR o.storeName LIKE :keyword",
+                Order.class)
+            .setParameter("keyword", "%" + keyword + "%")
+            .getResultList();
     }
 
     public void processOrderAsync(Long orderId) {
-        Thread thread = new Thread(() -> {
+        executorService.submit(() -> {
             try {
                 Order order = getOrderById(orderId);
                 Thread.sleep(3000);
@@ -71,12 +83,5 @@ public class OrderService {
                 e.printStackTrace();
             }
         });
-        thread.start();
-        try {
-            thread.suspend();
-            thread.resume();
-        } catch (Exception e) {
-            // 무시
-        }
     }
 }
