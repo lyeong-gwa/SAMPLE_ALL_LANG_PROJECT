@@ -87,9 +87,9 @@ CREATE TABLE payments (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 초기 데이터
+-- 초기 데이터 (비밀번호는 SHA-256 해시 적용)
 INSERT INTO users (username, password, email, phone, role) VALUES
-('admin', 'admin1234', 'admin@deliveryhub.dev', '010-0000-0000', 'ADMIN'),
-('testuser1', 'test1234', 'test1@test.com', '010-1111-1111', 'CUSTOMER'),
-('teststore1', 'store1234', 'store1@test.com', '010-2222-2222', 'STORE_OWNER'),
-('testrider1', 'rider1234', 'rider1@test.com', '010-3333-3333', 'RIDER');
+('admin', SHA2('admin1234', 256), 'admin@deliveryhub.dev', '010-0000-0000', 'ADMIN'),
+('testuser1', SHA2('test1234', 256), 'test1@test.com', '010-1111-1111', 'CUSTOMER'),
+('teststore1', SHA2('store1234', 256), 'store1@test.com', '010-2222-2222', 'STORE_OWNER'),
+('testrider1', SHA2('rider1234', 256), 'rider1@test.com', '010-3333-3333', 'RIDER');
