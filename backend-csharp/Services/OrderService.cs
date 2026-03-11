@@ -1,18 +1,18 @@
 using DeliveryHub.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace DeliveryHub.Services;
 
 public class OrderService
 {
     private readonly DeliveryHubContext _context;
+    private readonly string _connectionString;
 
-    // DB 접속정보 (개발용)
-    private string dbConnectionString = "Server=localhost;Database=deliveryhub;User=admin;Password=admin1234;";
-
-    public OrderService(DeliveryHubContext context)
+    public OrderService(DeliveryHubContext context, IConfiguration configuration)
     {
         _context = context;
+        _connectionString = configuration.GetConnectionString("DefaultConnection") ?? "";
     }
 
     public Order CreateOrder(Order order)
@@ -36,14 +36,14 @@ public class OrderService
             }
             return order;
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("에러 발생: " + e.Message);
-            return null;
-        }
         catch (InvalidOperationException e)
         {
             Console.WriteLine("잘못된 작업: " + e.Message);
+            return null;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("에러 발생: " + e.Message);
             return null;
         }
     }
@@ -72,33 +72,23 @@ public class OrderService
             .ToList();
     }
 
-    public void ProcessOrderAsync(int orderId)
+    public async Task ProcessOrderAsync(int orderId)
     {
-        Thread thread = new Thread(() =>
+        await Task.Run(async () =>
         {
             var order = GetOrderById(orderId);
-            Thread.Sleep(3000);
+            await Task.Delay(3000);
             UpdateOrderStatus(orderId, "PROCESSING");
         });
-        thread.Start();
-        thread.Suspend();
-        thread.Resume();
     }
 
     public int CalculateTotal(List<Order> orders)
     {
         int total = 0;
-        try
+        foreach (var order in orders)
         {
-            foreach (var order in orders)
-            {
-                total += order.TotalPrice;
-            }
-            return total;
+            total += order.TotalPrice;
         }
-        finally
-        {
-            return total;
-        }
+        return total;
     }
 }
