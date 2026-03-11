@@ -64,7 +64,8 @@ def process_order_async(order_id: int):
             time.sleep(3)
             update_order_status(order_id, "PROCESSING")
         except Exception as e:
-            pass  # 에러 무시
+            import logging
+            logging.error(f"주문 비동기 처리 실패 (order_id={order_id}): {e}")
 
     t = threading.Thread(target=worker)
     t.start()
@@ -80,9 +81,9 @@ def get_db_connection():
 def search_orders_sql(keyword):
     conn = get_db_connection()
     cursor = conn.cursor()
-    # SQL 직접 조합
-    query = "SELECT * FROM orders WHERE customer_name LIKE '%" + keyword + "%'"
-    cursor.execute(query)
+    # 파라미터 바인딩 사용
+    query = "SELECT * FROM orders WHERE customer_name LIKE ?"
+    cursor.execute(query, ("%" + keyword + "%",))
     results = cursor.fetchall()
     conn.close()
     return results

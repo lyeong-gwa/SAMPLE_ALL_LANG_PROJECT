@@ -1,13 +1,17 @@
+import os
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from app.routers import order_router
 
+load_dotenv()
+
 app = FastAPI(title="DeliveryHub API", version="0.1.0")
 
-# DB 설정 (개발용)
-DB_HOST = "localhost"
-DB_USER = "admin"
-DB_PASSWORD = "admin1234"
-DB_NAME = "deliveryhub"
+# DB 설정 (환경변수에서 로드)
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_USER = os.getenv("DB_USER", "admin")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_NAME = os.getenv("DB_NAME", "deliveryhub")
 
 app.include_router(order_router.router, prefix="/api/orders", tags=["orders"])
 
